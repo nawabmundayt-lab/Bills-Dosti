@@ -1,0 +1,51 @@
+{
+  "name": "billsplit-dost",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build --turbopack",
+    "start": "next start",
+    "lint": "eslint",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "smoke": "node scripts/smoke.mjs",
+    "check:rules": "node scripts/check-rules.mjs",
+    "e2e": "playwright test",
+    "lighthouse": "lighthouse http://localhost:3000/en --config-path=lighthouse.config.mjs --chrome-flags=\"--headless --no-sandbox\"",
+    "format": "prettier --write \"app/**/*.{ts,tsx,css}\" \"components/**/*.{ts,tsx}\" \"lib/**/*.{ts,tsx}\" \"i18n/**/*.ts\" \"messages/*.json\" \"tests/**/*.ts\" \"scripts/*.mjs\" \"*.{ts,mjs,json}\""
+  },
+  "dependencies": {
+    "@serwist/next": "^9.5.12",
+    "@tanstack/react-query": "^5.101.4",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "firebase": "^12.18.0",
+    "framer-motion": "^13.1.1",
+    "lucide-react": "^1.33.0",
+    "next": "15.5.23",
+    "next-intl": "^4.13.7",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "react-hook-form": "^7.85.0",
+    "serwist": "^9.5.12",
+    "tailwind-merge": "^3.6.0",
+    "zod": "^4.4.3",
+    "zustand": "^5.0.15"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "@playwright/test": "^1.62.1",
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "15.5.23",
+    "lighthouse": "^13.4.1",
+    "prettier": "^3.9.6",
+    "tailwindcss": "^4",
+    "typescript": "^5",
+    "vitest": "^4.1.11"
+  }
+}

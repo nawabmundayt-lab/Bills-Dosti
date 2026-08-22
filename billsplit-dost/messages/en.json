@@ -1,0 +1,145 @@
+{
+  "app": {
+    "name": "BillSplit Dost",
+    "tagline": "Split bills with friends — without the awkwardness"
+  },
+  "nav": {
+    "home": "Home",
+    "groups": "Groups",
+    "activity": "Activity",
+    "profile": "Profile"
+  },
+  "welcome": {
+    "title": "Split bills with friends — without the awkwardness",
+    "continue": "Continue",
+    "installPreview": "See install prompt",
+    "languages": "Language"
+  },
+  "login": {
+    "title": "Login",
+    "hint": "We'll text you a one-time code. No app permissions needed — your browser auto-fills it.",
+    "country": "Country",
+    "phone": "Phone number",
+    "sendOtp": "Send OTP",
+    "terms": "By continuing you agree to our Terms & Privacy Policy",
+    "continue": "Continue"
+  },
+  "verify": {
+    "title": "Verify",
+    "sent": "We sent a 4-digit code to {phone}",
+    "autoFill": "Auto-filling from SMS…",
+    "verify": "Verify & Continue",
+    "resend": "Resend in {seconds}s",
+    "changeNumber": "Change number"
+  },
+  "onboarding": {
+    "title": "Create your profile",
+    "subtitle": "How should friends find you?",
+    "name": "Your name",
+    "cta": "Start using BillSplit Dost 🎉"
+  },
+  "home": {
+    "greeting": "Assalam-o-Alaikum, {name} 👋",
+    "youOwe": "You owe",
+    "youAreOwed": "You're owed",
+    "settleUp": "Settle up",
+    "addExpense": "Add expense",
+    "balances": "Balances",
+    "yourGroups": "Your groups",
+    "recentActivity": "Recent activity",
+    "installTitle": "Install BillSplit Dost",
+    "installBody": "Works offline · 1 tap from home screen",
+    "install": "Install",
+    "updateReady": "New version ready",
+    "refresh": "Refresh",
+    "noGroups": "No groups yet — create one and invite your doston!"
+  },
+  "expense": {
+    "title": "Add expense",
+    "amount": "Amount",
+    "whatFor": "What for?",
+    "category": "Category",
+    "paidBy": "Paid by",
+    "date": "Date",
+    "next": "Next: split it",
+    "split": "Split it",
+    "equal": "Equal",
+    "percent": "Percent",
+    "shares": "Shares",
+    "exact": "Exact",
+    "eachPays": "Each pays",
+    "save": "Save expense",
+    "categories": {
+      "food": "Food",
+      "groceries": "Groceries",
+      "rent": "Rent",
+      "utilities": "Utilities",
+      "fuel": "Fuel",
+      "fun": "Fun",
+      "trip": "Trip",
+      "other": "Other"
+    }
+  },
+  "group": {
+    "members": "{count} members",
+    "totalMonth": "Total this month",
+    "whoOwesWhom": "Who owes whom",
+    "invite": "Invite",
+    "expenses": "Expenses"
+  },
+  "settle": {
+    "title": "Settle up",
+    "youOwe": "You owe",
+    "youAreOwed": "You're owed",
+    "pay": "Pay",
+    "remind": "Remind",
+    "with": "Settle with {name}",
+    "chooseApp": "Choose your payment app",
+    "safeNote": "Money goes bank-to-bank in your own app. We never touch it.",
+    "payNow": "Pay Now 💚",
+    "qr": "Show QR",
+    "copyId": "Copy payment ID",
+    "copied": "Deep link copied ✓",
+    "fallbackNote": "If the app doesn't open, use QR or copy the payment ID."
+  },
+  "profile": {
+    "title": "Profile",
+    "groups": "Groups",
+    "expenses": "Expenses",
+    "settled": "Settled",
+    "goPro": "Go Pro",
+    "proBlurb": "Receipt scan, stats & no limits",
+    "settings": "Settings",
+    "help": "Help & FAQ",
+    "privacy": "Privacy Policy"
+  },
+  "pro": {
+    "title": "Pro",
+    "subtitle": "For doston who mean business 😄",
+    "price": "Rs 299/month",
+    "subscribe": "Subscribe — Rs 299/mo",
+    "secure": "Secure checkout by Safepay · cancel anytime"
+  },
+  "install": {
+    "title": "Install BillSplit Dost",
+    "body": "Add to your home screen — it works offline, loads in a tap, and updates itself.",
+    "f1": "Opens like an app — no browser bar",
+    "f2": "Works without internet",
+    "f3": "Get push notifications",
+    "cta": "Install",
+    "later": "Not now"
+  },
+  "offline": {
+    "title": "You're offline",
+    "body": "No internet connection. Your cached groups are still here — new expenses will sync when you're back online.",
+    "cached": "Cached & ready",
+    "retry": "Retry",
+    "addExpense": "Add expense"
+  },
+  "update": {
+    "title": "New version ready",
+    "body": "We shipped improvements — a quick refresh gets you the latest hisaab updates.",
+    "refresh": "Refresh now",
+    "later": "Later"
+  }
+}

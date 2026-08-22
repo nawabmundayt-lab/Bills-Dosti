@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BillSplit Dost — Design Prototype (390×844)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* ═══════════ Design tokens (mirrors docs/phase-02/01-design-system.md) ═══════════ */
+:root{
+  --green-600:#0E7A3D; --green-700:#0B5D33; --green-100:#D9F2E3; --green-50:#EDF9F1;
+  --gold-500:#E8A800; --gold-100:#FCF3D4;
+  --ink:#16211B; --muted:#5C6B62; --bg:#F6F8F6; --surface:#FFFFFF;
+  --border:#E2E9E3; --danger:#D64545; --success:#1E9E5A;
+  --overlay:rgba(22,33,27,.5);
+  --shadow-card:0 1px 2px rgba(22,33,27,.06);
+  --shadow-float:0 8px 24px rgba(22,33,27,.14);
+  --r-sm:8px; --r-md:12px; --r-lg:16px;
+  --font:'Inter',system-ui,-apple-system,sans-serif;
+  --font-ur:'Noto Nastaliq Urdu','Noto Naskh Arabic',serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{
+  font-family:var(--font); background:
+    radial-gradient(1200px 600px at 80% -10%, #D9F2E3 0%, transparent 60%),
+    radial-gradient(1000px 500px at -10% 110%, #FCF3D4 0%, transparent 55%),
+    #EDF1ED;
+  min-height:100vh; display:flex; flex-direction:column; align-items:center;
+  padding:28px 16px 60px; color:var(--ink);
+}
+.toolbar{ display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-bottom:20px; max-width:640px }
+.toolbar span{ font-size:12px; font-weight:700; color:var(--muted); align-self:center; margin-right:4px }
+.toolbar button{
+  font:600 12px var(--font); color:var(--green-700); background:var(--surface);
+  border:1.5px solid var(--border); border-radius:999px; padding:7px 14px; cursor:pointer;
+}
+.toolbar button:hover{ border-color:var(--green-600); background:var(--green-50) }
+.toolbar button.pwa{ color:var(--gold-500); border-color:var(--gold-500) }
+
+/* ═══════════ Phone frame ═══════════ */
+.phone{
+  width:390px; height:844px; background:var(--bg); border-radius:48px;
+  border:10px solid #171C19; box-shadow:0 30px 60px rgba(22,33,27,.35);
+  position:relative; overflow:hidden; flex-shrink:0;
+}
+.notch{
+  position:absolute; top:10px; left:50%; transform:translateX(-50%);
+  width:150px; height:30px; background:#171C19; border-radius:0 0 20px 20px; z-index:60;
+}
+.statusbar{
+  height:48px; display:flex; align-items:center; justify-content:space-between;
+  padding:0 28px; font-size:13px; font-weight:600; position:relative; z-index:50; background:transparent;
+}
+.statusbar .right{ display:flex; gap:5px; font-size:11px }
+
+/* ═══════════ Screens ═══════════ */
+.screen{ position:absolute; inset:0; display:none; flex-direction:column; overflow-y:auto; overflow-x:hidden; scrollbar-width:none }
+.screen::-webkit-scrollbar{ display:none }
+.screen.active{ display:flex }
+.screen.tinted{ background:linear-gradient(180deg,var(--green-50) 0%, var(--bg) 42%) }
+
+/* Top bar */
+.topbar{ height:56px; display:flex; align-items:center; gap:10px; padding:0 20px; flex-shrink:0 }
+.topbar h1{ font-size:22px; font-weight:700; flex:1 }
+.topbar .sub{ font-size:13px; color:var(--muted); font-weight:500 }
+.btn-icon{ width:40px; height:40px; border-radius:50%; border:none; background:var(--surface); box-shadow:var(--shadow-card); font-size:17px; cursor:pointer; display:flex; align-items:center; justify-content:center; color:var(--ink) }
+.btn-icon:active{ transform:scale(.95) }
+
+/* Update banner (s33) */
+.update-banner{
+  margin:0 20px 10px; background:var(--ink); color:#fff; border-radius:12px;
+  display:flex; align-items:center; gap:10px; padding:12px 14px; font-size:13.5px; font-weight:500;
+  animation:slideDown .3s ease-out;
+}
+.update-banner button{ margin-left:auto; background:var(--gold-500); color:var(--ink); border:none; font:700 12px var(--font); padding:7px 12px; border-radius:8px; cursor:pointer }
+
+/* Cards */
+.card{ background:var(--surface); border:1px solid var(--border); border-radius:var(--r-md); padding:16px; box-shadow:var(--shadow-card) }
+.card.green{ background:linear-gradient(135deg,var(--green-600),var(--green-700)); border:none; color:#fff }
+.card.gold{ background:linear-gradient(135deg,#F7B500,#E8A800); border:none; color:var(--ink) }
+.card.green-soft{ background:var(--green-50); border:1px solid var(--green-100) }
+
+/* Money */
+.money{ font-variant-numeric:tabular-nums; font-weight:700 }
+.money.lg{ font-size:28px; letter-spacing:-.5px }
+.money.sm{ font-size:15px }
+
+/* Buttons */
+.btn{ height:52px; border-radius:var(--r-md); border:none; font:600 16px var(--font); cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; width:100% }
+.btn:active{ transform:scale(.985) }
+.btn-primary{ background:var(--green-600); color:#fff }
+.btn-primary:active{ background:var(--green-700) }
+.btn-outline{ background:var(--surface); border:1.5px solid var(--border); color:var(--ink) }
+.btn-gold{ background:var(--gold-500); color:var(--ink) }
+.btn-danger-text{ background:none; border:none; color:var(--danger); font:600 14px var(--font); padding:12px }
+.btn-sm{ height:38px; font-size:13.5px; border-radius:10px; padding:0 14px; width:auto }
+
+/* Inputs */
+.field{ display:flex; flex-direction:column; gap:6px; margin-bottom:14px }
+.field label{ font-size:13px; font-weight:600; color:var(--muted) }
+.input{
+  height:52px; background:var(--bg); border:1.5px solid var(--border); border-radius:var(--r-sm);
+  padding:0 14px; font:500 16px var(--font); color:var(--ink); width:100%;
+}
+.input:focus{ outline:none; border-color:var(--green-600); box-shadow:0 0 0 3px var(--green-100) }
+.input.money-input{ font-size:22px; font-weight:700; font-variant-numeric:tabular-nums }
+
+/* Chips */
+.chips{ display:flex; gap:8px; flex-wrap:wrap }
+.chip{
+  height:36px; padding:0 14px; border-radius:999px; border:1.5px solid var(--border);
+  background:var(--surface); font:600 13px var(--font); color:var(--ink); cursor:pointer; display:flex; align-items:center; gap:6px;
+}
+.chip.active{ background:var(--green-100); border-color:var(--green-600); color:var(--green-700) }
+.chip.gold.active{ background:var(--gold-100); border-color:var(--gold-500); color:#7A5A00 }
+
+/* Lists */
+.row{ display:flex; align-items:center; gap:12px; padding:13px 16px; background:var(--surface); border-bottom:1px solid var(--border); cursor:pointer }
+.row:active{ background:var(--green-50) }
+.row .meta{ flex:1; min-width:0 }
+.row .t{ font-size:15px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
+.row .s{ font-size:12.5px; color:var(--muted); margin-top:2px }
+.avatar{ width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:15px; color:#fff; flex-shrink:0 }
+.avatar.sm{ width:28px; height:28px; font-size:11px }
+.avatar-stack{ display:flex }
+.avatar-stack .avatar{ border:2px solid var(--surface); margin-left:-8px }
+.avatar-stack .avatar:first-child{ margin-left:0 }
+
+/* Bottom nav */
+.bottombar{
+  height:64px; background:var(--surface); border-top:1px solid var(--border);
+  display:flex; align-items:center; justify-content:space-around;
+  padding-bottom:env(safe-area-inset-bottom); flex-shrink:0; position:relative; z-index:40;
+}
+.nav-item{ border:none; background:none; display:flex; flex-direction:column; align-items:center; gap:3px; font:600 10.5px var(--font); color:var(--muted); cursor:pointer; padding:4px 12px; border-radius:12px }
+.nav-item .ico{ font-size:20px; line-height:1 }
+.nav-item.active{ color:var(--green-600) }
+.nav-item.active .ico{ transform:scale(1.08) }
+
+/* FAB */
+.fab{
+  position:absolute; right:20px; bottom:84px; width:56px; height:56px; border-radius:50%;
+  background:var(--green-600); color:#fff; border:none; font-size:26px; font-weight:500;
+  box-shadow:var(--shadow-float); cursor:pointer; z-index:45; display:flex; align-items:center; justify-content:center;
+}
+.fab:active{ background:var(--green-700); transform:scale(.96) }
+
+/* Sheet */
+.sheet{
+  position:absolute; left:0; right:0; bottom:0; background:var(--surface);
+  border-radius:16px 16px 0 0; padding:10px 20px calc(20px + env(safe-area-inset-bottom));
+  z-index:55; display:none; max-height:86%; overflow-y:auto; box-shadow:0 -8px 30px rgba(22,33,27,.18);
+  animation:sheetUp .28s ease-out;
+}
+.sheet.open{ display:block }
+.sheet .grab{ width:40px; height:4px; border-radius:99px; background:var(--border); margin:0 auto 14px }
+.sheet h2{ font-size:19px; font-weight:700; margin-bottom:14px }
+.scrim{ position:absolute; inset:0; background:var(--overlay); z-index:54; display:none }
+.scrim.open{ display:block }
+
+/* Toast */
+.toast{
+  position:absolute; left:20px; right:20px; bottom:90px; background:var(--ink); color:#fff;
+  border-radius:12px; padding:14px 16px; font-size:14px; font-weight:500; z-index:70; display:none;
+  box-shadow:var(--shadow-float); text-align:center;
+}
+.toast.show{ display:block; animation:fadeUp .25s ease-out }
+
+/* Segment control */
+.seg{ display:flex; background:var(--bg); border:1px solid var(--border); border-radius:12px; padding:4px; gap:4px }
+.seg button{ flex:1; height:38px; border:none; background:transparent; border-radius:9px; font:600 13px var(--font); color:var(--muted); cursor:pointer }
+.seg button.active{ background:var(--surface); color:var(--green-700); box-shadow:var(--shadow-card) }
+
+/* Progress bars */
+.bar{ height:8px; border-radius:99px; background:var(--border); overflow:hidden }
+.bar i{ display:block; height:100%; border-radius:99px }
+
+/* Misc */
+.center{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:24px; gap:12px }
+.section-label{ font-size:12.5px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.6px; padding:14px 20px 8px }
+.urdu{ font-family:var(--font-ur); direction:rtl; line-height:2 }
+.divider{ height:1px; background:var(--border); margin:8px 0 }
+.pill{ display:inline-flex; align-items:center; gap:4px; font-size:11.5px; font-weight:700; padding:4px 10px; border-radius:999px }
+.pill.green{ background:var(--green-100); color:var(--green-700) }
+.pill.gold{ background:var(--gold-100); color:#7A5A00 }
+.toggle{ width:46px; height:28px; border-radius:99px; background:var(--border); position:relative; border:none; cursor:pointer; transition:.2s }
+.toggle::after{ content:""; position:absolute; top:3px; left:3px; width:22px; height:22px; border-radius:50%; background:#fff; box-shadow:0 1px 3px rgba(0,0,0,.25); transition:.2s }
+.toggle.on{ background:var(--green-600) }
+.toggle.on::after{ left:21px }
+.icon-tile{ width:38px; height:38px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0 }
+
+@keyframes sheetUp{ from{transform:translateY(40px);opacity:.6} to{transform:none;opacity:1} }
+@keyframes slideDown{ from{transform:translateY(-12px);opacity:0} to{transform:none;opacity:1} }
+@keyframes fadeUp{ from{transform:translateY(10px);opacity:0} to{transform:none;opacity:1} }
+@keyframes pop{ from{transform:scale(.6);opacity:0} to{transform:scale(1);opacity:1} }
+
+/* Install prompt (s31) */
+.install-card{ background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:16px; display:flex; gap:12px; align-items:center; box-shadow:var(--shadow-float); margin:0 20px 12px }
+.install-card .logo{ width:48px; height:48px; border-radius:12px; background:linear-gradient(135deg,var(--green-600),var(--green-700)); display:flex; align-items:center; justify-content:center; font-size:24px; flex-shrink:0 }
+
+/* Offline (s32) */
+.offline-ill{ width:120px; height:120px; border-radius:50%; background:var(--green-100); display:flex; align-items:center; justify-content:center; font-size:52px }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <span>QUICK JUMP</span>
+  <button onclick="go('welcome')">Welcome</button>
+  <button onclick="go('home')">Home</button>
+  <button onclick="go('groups')">Groups</button>
+  <button onclick="go('group-detail')">Group</button>
+  <button onclick="go('add1')">Add expense</button>
+  <button onclick="go('settle-list')">Settle list</button>
+  <button onclick="go('pay')">Settle pay</button>
+  <button onclick="go('pro')">Pro</button>
+  <button class="pwa" onclick="go('install')">⬇ Install</button>
+  <button class="pwa" onclick="go('offline')">📡 Offline</button>
+  <button class="pwa" onclick="go('update')">🔄 Update</button>
+</div>
+
+<div class="phone">
+  <div class="notch"></div>
+
+  <!-- ══════════════ s1 WELCOME ══════════════ -->
+  <div class="screen tinted" id="welcome">
+    <div class="statusbar"><span>9:41</span><span class="right">📶 🔋</span></div>
+    <div class="center" style="gap:18px">
+      <div style="width:96px;height:96px;border-radius:24px;background:linear-gradient(135deg,var(--green-600),var(--green-700));display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-float)">🪙🤝</div>
+      <div>
+        <h1 style="font-size:30px;font-weight:800">BillSplit Dost</h1>
+        <p id="tagline" style="color:var(--muted);font-size:15px;margin-top:6px">Split bills with friends — without the awkwardness</p>
+      </div>
+      <div class="chips" style="justify-content:center;margin-top:8px">
+        <button class="chip active" onclick="setLang('en')">🇬🇧 English</button>
+        <button class="chip" onclick="setLang('ur')">🇵🇰 اردو</button>
+        <button class="chip" onclick="setLang('hi')">🇮🇳 हिंदी</button>
+      </div>
+      <div style="width:100%;max-width:300px;display:flex;flex-direction:column;gap:10px;margin-top:16px">
+        <button class="btn btn-primary" onclick="go('login')">Continue →</button>
+        <button class="btn btn-outline" onclick="go('install')">See install prompt</button>
+      </div>
+    </div>
+    <div class="bottombar" style="opacity:.35">
+      <button class="nav-item"><span class="ico">🏠</span>Home</button>
+      <button class="nav-item"><span class="ico">👥</span>Groups</button>
+      <button class="nav-item"><span class="ico">🧾</span>Activity</button>
+      <button class="nav-item"><span class="ico">👤</span>Profile</button>
+    </div>
+  </div>
+
+  <!-- ══════════════ s3 LOGIN ══════════════ -->
+  <div class="screen tinted" id="login">
+    <div class="statusbar"><span>9:41</span><span class="right">📶 🔋</span></div>
+    <div class="topbar"><button class="btn-icon" onclick="go('welcome')">←</button><h1>Login</h1></div>
+    <div style="padding:20px 20px 0;flex:1">
+      <div class="card green-soft" style="margin-bottom:20px">
+        <div style="font-size:26px">📱</div>
+        <p style="font-size:14px;margin-top:6px">We'll text you a <b>one-time code</b>. No app permissions needed — your browser auto-fills it.</p>
+      </div>
+      <div class="field">
+        <label>Country</label>
+        <div class="chips">
+          <button class="chip active" onclick="setCountry('pk')">🇵🇰 Pakistan +92</button>
+          <button class="chip" onclick="setCountry('in')">🇮🇳 India +91</button>
+        </div>
+      </div>
+      <div class="field">
+        <label>Phone number</label>
+        <div style="display:flex;gap:10px">
+          <div class="input" style="width:88px;text-align:center;font-weight:700" id="ccode">+92</div>
+          <input class="input money-input" id="phone" placeholder="300 1234567" inputmode="numeric" style="font-size:18px" value="300 1234567">
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="go('otp')">Send OTP</button>
+      <p style="text-align:center;font-size:12px;color:var(--muted);margin-top:14px">By continuing you agree to our <a style="color:var(--green-600)">Terms</a> & <a style="color:var(--green-600)">Privacy Policy</a></p>
+    </div>
+  </div>
+
+  <!-- ══════════════ s4 OTP ══════════════ -->
+  <div class="screen tinted" id="otp">
+    <div class="statusbar"><span>9:41</span><span class="right">📶 🔋</span></div>
+    <div class="topbar"><button class="btn-icon" onclick="go('login')">←</button><h1>Verify</h1></div>
+    <div style="padding:20px;flex:1">
+      <p style="color:var(--muted);font-size:14px">We sent a 4-digit code to <b style="color:var(--ink)">+92 300 1234567</b></p>
+      <div style="display:flex;gap:12px;margin:28px 0">
+        <input class="input" maxlength="1" value="4" style="text-align:center;font-size:26px;font-weight:800" autocomplete="one-time-code">
+        <input class="input" maxlength="1" value="8" style="text-align:center;font-size:26px;font-weight:800">
+        <input class="input" maxlength="1" value="2" style="text-align:center;font-size:26px;font-weight:800">
+        <input class="input" maxlength="1" style="text-align:center;font-size:26px;font-weight:800" autofocus>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;justify-content:center;color:var(--muted);font-size:13px;margin-bottom:24px">
+        <span class="icon-tile" style="background:var(--green-100);width:28px;height:28px;font-size:14px">✨</span>
+        Auto-filling from SMS…
+      </div>
+      <button class="btn btn-primary" onclick="go('onboarding')">Verify & Continue</button>
+      <div style="text-align:center;margin-top:16px;font-size:13.5px">
+        <span style="color:var(--muted)">Resend in 27s</span> · <a style="color:var(--green-600);font-weight:600;cursor:pointer" onclick="go('login')">Change number</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════ s5 ONBOARDING ══════════════ -->
+  <div class="screen tinted" id="onboarding">
+    <div class="statusbar"><span>9:41</span><span class="right">📶 🔋</span></div>
+    <div class="center" style="gap:14px;justify-content:flex-start;padding-top:60px">
+      <h1 style="font-size:26px;font-weight:800">Create your profile</h1>
+      <p style="color:var(--muted);font-size:14px">How should friends find you?</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:8px 0">
+        <div class="avatar" style="width:56px;height:56px;font-size:22px;background:#E86A5E;cursor:pointer;border:3px solid var(--green-600)">ع</div>
+        <div class="avatar" style="width:56px;height:56px;font-size:22px;background:#4A90D9;cursor:pointer">आ</div>
+        <div class="avatar" style="width:56px;height:56px;font-size:22px;background:#8E6BC9;cursor:pointer">🦁</div>
+        <div class="avatar" style="width:56px;height:56px;font-size:22px;background:#E8A800;cursor:pointer">🍵</div>
+      </div>
+      <div style="width:100%;max-width:320px">
+        <div class="field">
+          <label>Your name</label>
+          <input class="input" value="Ali Raza">
+        </div>
+        <button class="btn btn-primary" onclick="go('home')">Start using BillSplit Dost 🎉</button>
+        <button class="btn btn-outline" style="margin-top:10px" onclick="go('notifs')">🔔 See notifications screen</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════ s6 HOME ══════════════ -->
+  <div class="screen tinted" id="home">
+    <div class="statusbar"><span>9:41</span><span class="right">📶 🔋</span></div>
+    <div class="update-banner" id="updateBanner">
+      <span>🔄 New version ready</span><button onclick="hideUpdate()">Refresh</button>
+    </div>
+    <div class="topbar">
+      <div style="flex:1">
+        <div style="font-size:13px;color:var(--muted)">Friday, 21 Aug</div>
+        <h1 style="font-size:21px">Assalam-o-Alaikum, Ali 👋</h1>
+      </div>
+      <button class="btn-icon" onclick="go('notifs')">🔔</button>
+    </div>
+
+    <!-- Install prompt (s31) -->
+    <div class="install-card" id="installCard">
+      <div class="logo">🪙</div>
+      <div style="flex:1">
+        <div style="font-weight:700;font-size:14.5px">Install BillSplit Dost</div>
+        <div style="font-size:12.5px;color:var(--muted)">Works offline · 1 tap from home screen</div>
+      </div>
+      <button class="btn btn-primary btn-sm" onclick="hideInstall()">Install</button>
+      <button style="border:none;background:none;font-size:16px;color:var(--muted);cursor:pointer" onclick="hideInstall()">✕</button>
+    </div>
+
+    <div style="padding:0 20px;flex:1;display:flex;flex-direction:column;gap:12px">
+      <div class="card green">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div style="font-size:13px;opacity:.9">You owe</div>
+            <div class="money lg">Rs 2,450</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-size:13px;opacity:.9">You're owed</div>
+            <div class="money lg" style="color:#FFD966">Rs 1,280</div>
+          </div>
+        </div>
+        <button class="btn btn-sm" style="background:#fff;color:var(--green-700);margin-top:14px" onclick="go('settle-list')">Settle up →</button>
+      </div>
+
+      <div style="display:flex;gap:10px">
+        <button class="btn btn-primary" style="flex:1.4" onclick="go('add1')">＋ Add expense</button>
+        <button class="btn btn-outline" style="flex:1" onclick="go('balances')">⚖️ Balances</button>
+      </div>
+
+      <div class="section-label" style="padding:6px 0 0">Your groups</div>
+      <div class="card" style="cursor:pointer" onclick="go('group-detail')">
+        <div style="display:flex;align-items:center;gap:12px">
+          <div class="avatar-stack">
+            <div class="avatar sm" style="background:#E86A5E">ع</div>
+            <div class="avatar sm" style="background:#4A90D9">I</div>
+            <div class="avatar sm" style="background:#8E6BC9">S</div>
+          </div>
+          <div style="flex:1">
+            <div style="font-weight:700">Chai Gang 🍵</div>
+            <div style="font-size:12.5px;color:var(--muted)">4 members</div>
+          </div>
+          <span class="money sm" style="color:var(--muted)">you owe <span class="money">Rs 450</span></span>
+        </div>
+      </div>
+      <div class="card" style="cursor:pointer" onclick="go('group-detail')">
+        <div style="display:flex;align-items:center;gap:12px">
+          <div class="avatar-stack">
+            <div class="avatar sm" style="background:#4A90D9">F</div>
+            <div class="avatar sm" style="background:#1E9E5A">H</div>
+            <div class="avatar sm" style="background:#E86A5E">A</div>
+          </div>
+          <div style="flex:1">
+            <div style="font-weight:700">Flat 302 🏠</div>
+            <div style="font-size:12.5px;color:var(--muted)">3 members</div>
+          </div>
+          <span class="money sm" style="color:var(--green-600)">owed <span class="money">Rs 1,100</span></span>
+        </div>
+      </div>
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:12px">
+          <div class="avatar-stack">
+            <div class="avatar sm" style="background:#8E6BC9">H</div>
+            <div class="avatar sm" style="background:#E8A800">T</div>
+          </div>
+          <div style="flex:1">
+            <div style="font-weight:700">Hunza Trip 2026 🏔️</div>
+            <div style="font-size:12.5px;color:var(--muted)">5 members</div>
+          </div>
+          <span class="pill green">Settled ✓</span>
+        </div>
+      </div>
+
+      <div class="section-label" style="padding:6px 0 0">Recent activity</div>
+      <div class="card" style="padding:4px 16px">
+        <div class="row" style="padding:12px 0" onclick="go('confirm')">
+          <span class="icon-tile" style="background:var(--green-100)">💸</span>
+          <div class="meta"><div class="t">Sara paid you</div><div class="s">Flat 302 · 2h ago</div></div>
+          <span class="money sm" style="color:var(--green-600)">+ Rs 1,100</span>
+        </div>
+        <div class="divider"></div>
+        <div class="row" style="padding:12px 0" onclick="go('expense-detail')">
+          <span class="icon-tile" style="background:var(--gold-100)">🍔</span>
+          <div class="meta"><div class="t">Dinner — Baba Jee</div><div class="s">Imran paid · Chai Gang · yesterday</div></div>
+          <span class="money sm">Rs 850</span>
+        </div>
+      </div>
+    </div>
+
+    <button class="fab" onclick="go('add1')">＋</button>
+    <div class="bottombar">
+      <button class="nav-item active"><span class="ico">🏠</span>Home</button>
+      <button class="nav-item" onclick="go('groups')"><span class="ico">👥</span>Groups</button>
+      <button class="nav-item" onclick="go('activity')"><span class="ico">🧾</span>Activity</button>
+      <button class="nav-item" onclick="go('profile')"><span class="ico">👤</span>Profile</button>
+    </div>
+  </div>
+
+  <!-- ══════════════ s7 GROUPS TAB ══════════════ -->
+  <div class="screen" id="groups">
+    <div class="statusbar"><span>9:41</span><span class="right">📶 🔋</span></div>
+    <div class="topbar"><h1>Groups</h1><button class="btn-icon" onclick="go('invite')">＋</button></div>
+    <div style="padding:0 20px 100px;flex:1;display:flex;flex-direction:column;gap:12px">
+      <div class="card" style="cursor:pointer" onclick="go('group-detail')">
+        <div style="display:flex;align-items:center;gap:12px">
+          <div class="avatar-stack">
+            <div class="avatar sm" style="background:#E86A5E">ع</div>
+            <div class="avatar sm" style="background:#4A90D9">I</div>
+            <div class="avatar sm" style="background:#8E6BC9">S</div>
+            <div class="avatar sm" style="background:#1E9E5A">B</div>
+          </div>
+          <div style="flex:1">
+            <div style="font-weight:700">Chai Gang 🍵</div>
+            <div style="font-size:12.5px;color:var(--muted)">4 members · last expense yesterday</div>
+          </div>
+          <span class="money sm" style="color:var(--muted)">− Rs 450</span>
+        </div>
+      </div>
+      <div class="card" style="cursor:pointer" onclick="go('group-detail')">
+        <div style="display:flex;align-items:center;gap:12px">
+          <div class="avatar-stack">
+            <div class="avatar sm" style="background:#4A90D9">F</div>
+            <div class="avatar sm" style="background:#1E9E5A">H</div>
+            <div class="avatar sm" style="background:#E86A5E">A</div>
+          </div>
+          <div style="flex:1">
+            <div style="font-weight:700">Flat 302 🏠</div>
+            <div style="font-size:12.5px;color:var(--muted)">3 members · rent week!</div>
+          </div>
+          <span class="money sm" style="color:var(--green-600)">+ Rs 1,100</span>
+        </div>
+      </div>
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:12px">
+          <div class="avatar-stack">
+            <div class="avatar sm" style="background:#8E6BC9">H</div>
+            <div class="avatar sm" style="background:#E8A800">T</div>
+            <div class="avatar sm" style="background:#E86A5E">N</div>
+            <div class="avatar sm" style="background:#4A90D9">K</div>
+            <div class="avatar sm" style="background:#1E9E5A">M</div>
+          </div>
+          <div style="flex:1">
+            <div style="font-weight:700">Hunza Trip 2026 🏔️</div>
+            <div style="font-size:12.5px;color:var(--muted)">5 members · 34 expenses</div>
+          </div>
+          <span class="pill green">Settled ✓</span>
+        </div>
+      </div>
+    </div>
+    <button class="fab" onclick="go('add1')">＋</button>
+    <div class="bottombar">
+      <button class="nav-item" onclick="go('home')"><span class="ico">🏠</span>Home</button>
+      <button class="nav-item active"><span class="ico">👥</span>Groups</button>
+      <button class="nav-item" onclick="go('activity')"><span class="ico">🧾</span>Activity</button>
+      <button class="nav-item" onclick="go('profile')"><span class="ico">👤</span>Profile</button>
+    </div>
+  </div>
+
+  <!-- ══════════════ s8 GROUP DETAIL ══════════════ -->
+  <div class="screen tinted" id="group-detail">
+    <div class="statusbar"><span>9:41</span><span class="right">📶 🔋</span></div>
+    <div class="topbar"><button class="btn-icon" onclick="go('groups')">←</button>
+      <div style="flex:1"><h1 style="font-size:20px">Chai Gang 🍵</h1><div class="sub">4 members · since March 2026</div></div>
+      <button class="btn-icon" onclick="go('invite')">➕</button>
+    </div>
+    <div style="padding:0 20px 100px;flex:1;display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;gap:10px">
+        <div class="card green" style="flex:1;cursor:pointer" onclick="go('balances')">
+          <div style="font-size:12.5px;opacity:.9">Who owes whom</div>
+          <div style="font-size:15px;font-weight:700;margin-top:4px">4 transfers · Rs 920</div>
+        </div>
+        <div class="card green-soft" style="flex:1">
+          <div style="font-size:12.5px;color:var(--muted)">Total this month</div>
+          <div class="money sm" style="margin-top:4px">Rs 8,450</div>
+        </div>
+      </div>
+      <div class="section-label" style="padding:6px 0 0">Members</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <span class="chip active">👤 Ali (you)</span>
+        <span class="chip">👤 Imran</span>
+        <span class="chip">👤 Sara</span>
+        <span class="chip">👤 Bilal</span>
+      </div>
+      <div class="section-label" style="padding:6px 0 0">Expenses</div>
+      <div class="card" style="padding:4px 16px">
+        <div class="row" style="padding:12px 0" onclick="go('expense-detail')">
+          <span class="icon-tile" style="background:var(--gold-100)">🍔</span>
+          <div class="meta"><div class="t">Dinner — Baba Jee</div><div class="s">Imran · yesterday · 4-way split</div></div>
+          <span class="money sm">Rs 850</span>
+        </div>
+        <div class="divider"></div>
+        <div class="row" style="padding:12px 0" onclick="go('expense-detail')">
+          <span class="icon-tile" style="background:var(--green-100)">☕</span>
+          <div class="meta"><div class="t">Chai + samosas</div><div class="s">You · 3 days ago · equal</div></div>
+          <span class="money sm">Rs 240</span>
+        </div>
+        <div class="divider"></div>
+        <div class="row" style="padding:12px 0" onclick="go('expense-detail')">
+          <span class="icon-tile" style="background:var(--gold-100)">🚕</span>
+          <div class="meta"><div class="t">Uber to Emporium</div><div class="s">Sara · last week · equal</div></div>
+          <span class="money sm">Rs 1,200</span>
+        </div>
+      </div>
+    </div>
+    <button class="fab" onclick="go('add1')">＋</button>
+    <div class="bottombar">
+      <button class="nav-item" onclick="go('home')"><span class="ico">🏠</span>Home</button>
+      <button class="nav-item active" onclick="go('groups')"><span class="ico">👥</span>Groups</button>
+      <button class="nav-item" onclick="go('activity')"><span class="ico">🧾</span>Activity</button>
+      <button class="nav-item" onclick="go('profile')"><span class="ico">👤</span>Profile</button>
+    </div>
+  </div>
+
+  <!-- ══════════════ s11 BALANCES ══════════════ -->
+  <div class="screen" id="balances">
+    <div class="statusbar"><span>9:41</span><span class="right">📶 🔋</span></div>
+    <div class="topbar"><button class="btn-icon" onclick="go('home')">←</button><h1>Balances</h1></div>
+    <div style="padding:0 20px 40px;flex:1">
+      <p style="font-size:13.5px;color:var(--muted);margin-bottom:14px">Simplified — minimum transfers to settle everyone in <b style="color:var(--ink)">Chai Gang</b>:</p>
+      <div class="card" style="padding:4px 16px">
+        <div class="row" style="padding:13px 0">
+          <span class="avatar sm" style="background:#E86A5E">ع</span>
+          <div class="meta"><div class="t">Ali → Imran</div><div class="s">You pay Imran</div></div>
+          <span class="money sm" style="color:var(--danger)">Rs 350</span>
+        </div>
+        <div class="divider"></div>
+        <div class="row" style="padding:13px 0">
+          <span class="avatar sm" style="background:#8E6BC9">S</span>
+          <div class="meta"><div class="t">Sara → Ali</div><div class="s">Sara pays you</div></div>
+          <span class="money sm" style="color:var(--green-600)">Rs 120</span>
+        </div>
+        <div class="divider"></div>
+        <div class="row" style="padding:13px 0">
+          <span class="avatar sm" style="background:#1E9E5A">B</span>
+          <div class="meta"><div class="t">Bilal → Imran</div><div class="s">Bilal pays Imran</div></div>
+          <span class="money sm" style="color:var(--danger)">Rs 450</span>
+        </div>
+      </div>
+      <button class="btn btn-primary" style="margin-top:18px" onclick="go('settle-list')">Settle up →</button>
+      <p style="font-size:12px;color:var(--muted);text-align:center;margin-top:10px">💡 "Simplify debts" is on · see full breakdown below</p>
+      <div class="divider" style="margin:18px 0"></div>
+      <p style="font-size:13.5px;font-weight:700;margin-bottom:8px">Full breakdown</p>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div class="card" style="padding:12px 16px;display:flex;justify-content:space-between"><span>Imran</span><span class="money sm" style="color:var(--green-600)">+ Rs 800</span></div>
+        <div class="card" style="padding:12px 16px;display:flex;justify-content:space-between"><span>Sara</span><span class="money sm" style="color:var(--green-600)">+ Rs 280</span></div>
+        <div class="card" style="padding:12px 16px;display:flex;justify-content:space-between"><span>Ali (you)</span><span class="money sm" style="color:var(--danger)">− Rs 230</span></div>
+        <div class="card" style="padding:12px 16px;display:flex;justify-content:space-between"><span>Bilal</span><span class="money sm" style="color:var(--danger)">− Rs 450</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════ s12 ADD EXPENSE — STEP 1 ══════════════ -->
+  <div class="screen" id="add1">
+    <div class="statusbar"><span>9:41</span><span class="right">📶 🔋</span></div>
+    <div class="topbar"><button class="btn-icon" onclick="go('home')">←</button><h1>Add expense</h1></div>
+    <div style="padding:10px 20px 40px;flex:1">
+      <div class="field">
+        <label>Amount</label>
+        <div style="display:flex;align-items:center;gap:8px;background:var(--bg);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:0 14px;height:60px">
+          <span style="font-weight:800;color:var(--green-600);font-size:20px">Rs</span>
+          <input class="input money-input" value="1,500" style="border:none;background:none;height:auto;padding:0;box-shadow:none;flex:1">
+        </div>
+      </div>
+      <div class="field">
+        <label>What for?</label>
+        <input class="input" value="Dinner — Baba Jee">
+      </div>
+      <div class="field">
+        <label>Category</label>
+        <div class="chips">
+          <button class="chip active">🍔 Food</button>
+          <button class="chip">🛒 Groceries</button>
+          <button class="chip">🏠 Rent</button>
+          <button class="chip">⚡ Utilities</button>
+          <button class="chip">⛽ Fuel</button>
+          <button class="chip">🎉 Fun</button>
+          <button class="chip">🧳 Trip</button>
+          <button class="chip">➕ Other</button>
+        </div>
+      </div>
+      <div class="field">
+        <label>Paid by</label>
+        <div class="chips">
+          <button class="chip active">👤 Ali (you)</button>
+          <button class="chip">👤 Imran</button>
+          <button class="chip">👤 Sara</button>
+          <button class="chip">👤 Bilal</button>
+        </div>
+        <div style="font-size:12px;color:var(--muted);margin-top:6px">Multi-payer? Select several — we'll split each share.</div>
+      </div>
+      <div class="field">
+        <label>Date</label>
+        <input class="input" value="Today · 21 Aug 2026" style="color:var(--muted)">
+      </div>
+      <button class="btn btn-primary" onclick="go('add2')">Next: split it →</button>
+    </div>
+  </div>
+
+  <!-- ══════════════ s13 ADD EXPENSE — STEP 2 (SPLIT) ══════════════ -->
+  <div class="screen" id="add2">
+    <div class="statusbar"><span>9:41</span><span class="right">📶 🔋</span></div>
+    <div class="topbar"><button class="btn-icon" onclick="go('add1')">←</button><h1>Split it</h1></div>
+    <div style="padding:10px 20px 40px;flex:1">
+      <div class="card green-soft" style="margin-bottom:14px;display:flex;justify-content:space-between;align-items:center">
+        <span style="font-weight:600;font-size:14px">Rs 1,500</span>
+        <span style="font-size:13px;color:var(--muted)">Dinner — Baba Jee</span>
+      </div>
+      <div class="seg" style="margin-bottom:18px">
+        <button class="active">Equal</button>
+        <button onclick="toast('Percent mode — per-member % inputs (must sum 100%)')">Percent</button>
+        <button onclick="toast('Shares mode — ratios like 2:1:1')">Shares</button>
+        <button onclick="toast('Exact mode — per-member amounts')">Exact</button>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div class="card" style="display:flex;align-items:center;gap:12px;padding:12px 16px">
+          <span class="avatar sm" style="background:#E86A5E">ع</span>
+          <div style="flex:1"><b>Ali</b><span style="font-size:12px;color:var(--muted)"> · you</span></div>
+          <span class="money sm" style="color:var(--green-600)">Rs 375</span>
+          <button class="toggle on"></button>
+        </div>
+        <div class="card" style="display:flex;align-items:center;gap:12px;padding:12px 16px">
+          <span class="avatar sm" style="background:#4A90D9">I</span>
+          <div style="flex:1"><b>Imran</b></div>
+          <span class="money sm">Rs 375</span>
+          <button class="toggle on"></button>
+        </div>
+        <div class="card" style="display:flex;align-items:center;gap:12px;padding:12px 16px">
+          <span class="avatar sm" style="background:#8E6BC9">S</span>
+          <div style="flex:1"><b>Sara</b></div>
+          <span class="money sm">Rs 375</span>
+          <button class="toggle on"></button>
+        </div>
+        <div class="card" style="display:flex;align-items:center;gap:12px;padding:12px 16px;opacity:.55">
+          <span class="avatar sm" style="background:#1E9E5A">B</span>
+          <div style="flex:1"><b>Bilal</b></div>
+          <span class="money sm">—</span>
+          <button class="toggle"></button>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin:16px 0">
+        <span style="font-size:13.5px;color:var(--muted)">Each pays</span>
+        <span class="money" style="font-size:19px">Rs 375 × 3</span>
+      </div>
+      <button class="btn btn-primary" onclick="go('home'); toast('Expense added ✓ Ali, Imran & Sara notified')">💾 Save expense</button>
+    </div>
+  </div>
+
+  <!-- ══════════════ s14 EXPENSE DETAIL ══════════════ -->
+  <div class="screen tinted" id="expense-detail">
+    <div class="statusbar"><span>9:41</span><span class="right">📶 🔋</span></div>
+    <div class="topbar"><button class="btn-icon" onclick="go('group-detail')">←</button><h1>Expense</h1><button class="btn-icon">✏️</button></div>
+    <div style="padding:0 20px 40px;flex:1">
+      <div class="center" style="padding:16px 0 20px">
+        <span class="icon-tile" style="background:var(--gold-100);width:56px;height:56px;font-size:26px">🍔</span>
+        <h2 style="font-size:22px;font-weight:800">Dinner — Baba Jee</h2>
+        <div style="color:var(--muted);font-size:13.5px">Imran paid · yesterday · Chai Gang</div>
+        <div class="money lg" style="font-size:32px;margin-top:6px">Rs 850</div>
+        <span class="pill gold" style="margin-top:6px">4-way equal split</span>
+      </div>
+      <div class="card" style="padding:4px 16px">
+        <div class="row" style="padding:12px 0"><span class="avatar sm" style="background:#E86A5E">ع</span><div class="meta"><div class="t">Ali</div><div class="s">owes Imran</div></div><span class="money sm" style="color:var(--danger)">− Rs 212.50</span></div>
+        <div class="divider"></div>
+        <div class="row" style="padding:12px 0"><span class="avatar sm" style="background:#4A90D9">I</span><div class="meta"><div class="t">Imran</div><div class="s">paid — gets back</div></div><span class="money sm" style="color:var(--green-600)">+ Rs 637.50</span></div>
+        <div class="divider"></div>
+        <div class="row" style="padding:12px 0"><span class="avatar sm" style="background:#8E6BC9">S</span><div class="meta"><div class="t">Sara</div><div class="s">owes Imran</div></div><span class="money sm" style="color:var(--danger)">− Rs 212.50</span></div>
+        <div class="divider"></div>
+        <div class="row" style="padding:12px 0"><span class="avatar sm" style="background:#1E9E5A">B</span><div class="meta"><div class="t">Bilal</div><div class="s">owes Imran</div></div><span class="money sm" style="color:var(--danger)">− Rs 212.50</span></div>
+      </div>
+      <button class="btn btn-danger-text" style="margin-top:14px">🗑 Delete expense</button>
+    </div>
+  </div>
+
+  <!-- ══════════════ s16 SETTLE LIST ══════════════ -->
+  <div class="screen tinted" id="settle-list">
+    <div class="statusbar"><span>9:41</span><span class="right">📶 🔋</span></div>
+    <div class="topbar"><button class="btn-icon" onclick="go('home')">←</button><h1>Settle up</h1></div>
+    <div style="padding:0 20px 40px;flex:1">
+      <div class="section-label" style="padding:6px 0 8px">You owe</div>
+      <div class="card" style="padding:4px 16px;margin-bottom:18px">
+        <div class="row" style="padding:13px 0">
+          <span class="avatar" style="background:#4A90D9">I</span>
+          <div class="meta"><div class="t">Imran</div><div class="s">Chai Gang · Dinner, Chai</div></div>
+          <span class="money sm" style="color:var(--danger);margin-right:10px">Rs 1,500</span>
+          <button class="btn btn-primary btn-sm" onclick="go('pay')">Pay</button>
+        </div>
+      </div>
+      <div class="section-label" style="padding:6px 0 8px">You're owed</div>
+      <div class="card" style="padding:4px 16px">
+        <div class="row" style="padding:13px 0">
+          <span class="avatar" style="background:#8E6BC9">S</span>
+          <div class="meta"><div class="t">Sara</div><div class="s">Flat 302 · Rent, groceries</div></div>
+          <span class="money sm" style="color:var(--green-600);margin-right:10px">Rs 1,100</span>
+          <button class="btn btn-outline btn-sm" onclick="go('confirm')">Remind</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════ s17 SETTLEMENT PAY ⭐ ══════════════ -->
+  <div class="screen" id="pay">
+    <div class="statusbar"><span>9:41</span><span class="right">📶 🔋</span></div>
+    <div class="center" style="justify-content:flex-start;padding-top:40px;gap:16px">
+      <button class="btn-icon" style="position:absolute;top:60px;left:20px" onclick="go('settle-list')">←</button>
+      <div class="avatar" style="width:64px;height:64px;font-size:24px;background:#4A90D9">I</div>
+      <h1 style="font-size:22px;font-weight:800">Settle with Imran</h1>
+      <div class="money lg" style="font-size:38px">Rs 1,500</div>
+      <div class="card green-soft" style="width:100%;max-width:330px;text-align:left">
+        <div style="font-size:13px;font-weight:700;margin-bottom:10px">Choose your payment app</div>
+        <div class="chips">
+          <button class="chip active" onclick="toast('Opens JazzCash → pay Imran directly')">🟥 JazzCash</button>
+          <button class="chip" onclick="toast('Opens Easypaisa → pay Imran directly')">🟦 Easypaisa</button>
+          <button class="chip" onclick="toast('Opens Raast (bank) → pay Imran directly')">🏦 Raast</button>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;font-size:13px;color:var(--muted);max-width:330px;text-align:left">
+        <span style="font-size:20px">🛡️</span>
+        <span>Money goes <b style="color:var(--ink)">bank-to-bank</b> in your own app. We never touch it.</span>
+      </div>
+      <button class="btn btn-primary" style="max-width:330px" onclick="go('paid')">Pay Now 💚</button>
+      <div style="display:flex;gap:16px;font-size:13px;color:var(--green-600);font-weight:600">
+        <span style="cursor:pointer" onclick="toast('QR code shown for other device')">◼ Show QR</span>
+        <span style="cursor:pointer" onclick="toast('UPI ID / IBAN copied')">⧉ Copy payment ID</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════ s18 MARK PAID ══════════════ -->
+  <div class="screen tinted" id="paid">
+    <div class="statusbar"><span>9:41</span><span class="right">📶 🔋</span></div>
+    <div class="center" style="gap:14px">
+      <div style="width:96px;height:96px;border-radius:50%;background:var(--green-100);display:flex;align-items:center;justify-content:center;font-size:44px;animation:pop .3s ease-out">✅</div>
+      <h1 style="font-size:24px;font-weight:800">Payment sent!</h1>
+      <p style="color:var(--muted);font-size:14.5px;max-width:280px">You paid <b style="color:var(--ink)">Imran Rs 1,500</b> via JazzCash.<br>Waiting for Imran to confirm receipt.</p>
+      <div class="card" style="width:100%;max-width:320px;text-align:left;padding:12px 16px">
+        <div style="display:flex;justify-content:space-between;font-size:13.5px;padding:6px 0"><span style="color:var(--muted)">Status</span><span class="pill gold">⏳ Awaiting confirmation</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:13.5px;padding:6px 0"><span style="color:var(--muted)">Transaction ref</span><span class="money sm">JZ-4829130</span></div>
+      </div>
+      <button class="btn btn-primary" style="max-width:320px" onclick="go('home')">Done</button>
+      <p style="font-size:12.5px;color:var(--muted)">Imran will get a push notification to confirm</p>
+    </div>
+  </div>
+
+  <!-- ══════════════ s19 CONFIRM RECEIPT ══════════════ -->
+  <div class="screen tinted" id="confirm">
+    <div class="statusbar"><span>9:41</span><span class="right">📶 🔋</span></div>
+    <div class="center" style="gap:14px">
+      <div class="avatar" style="width:64px;height:64px;font-size:24px;background:#8E6BC9">S</div>
+      <h1 style="font-size:22px;font-weight:800">Sara paid you</h1>
+      <div class="money lg" style="font-size:36px;color:var(--green-600)">Rs 1,100</div>
+      <p style="color:var(--muted);font-size:14px">Flat 302 · via UPI (GPay) · just now</p>
+      <div style="display:flex;flex-direction:column;gap:10px;width:100%;max-width:320px;margin-top:8px">
+        <button class="btn btn-primary" onclick="go('home'); toast('Settled ✓ Sara notified · Rs 1,100 cleared')">✓ Confirm received</button>
+        <button class="btn btn-outline" onclick="toast('Sara will be notified to re-check')">Not yet received</button>
+      </div>
+      <p style="font-size:12.5px;color:var(--muted)">Only confirm when the money is in your account</p>
+    </div>
+  </div>
+
+  <!-- ══════════════ s21 ACTIVITY ══════════════ -->
+  <div class="screen" id="activity">
+    <div class="statusbar"><span>9:41</span><span class="right">📶 🔋</span></div>
+    <div class="topbar"><h1>Activity</h1><button class="btn-icon" onclick="go('summary')">📊</button></div>
+    <div style="padding:0 20px;flex:1;display:flex;flex-direction:column;gap:10px">
+      <div class="chips">
+        <button class="chip active">All</button>
+        <button class="chip" onclick="toast('Filter: Chai Gang')">Chai Gang</button>
+        <button class="chip" onclick="toast('Filter: Flat 302')">Flat 302</button>
+        <button class="chip" onclick="toast('Filter: expenses only')">Expenses</button>
+        <button class="chip" onclick="toast('Filter: settlements')">Settlements</button>
+      </div>
+      <div class="card" style="padding:4px 16px">
+        <div class="row" style="padding:12px 0" onclick="go('confirm')">
+          <span class="icon-tile" style="background:var(--green-100)">💸</span>
+          <div class="meta"><div class="t">Sara paid you Rs 1,100</div><div class="s">Today · 11:02 · Flat 302</div></div>
+          <span class="pill gold">pending</span>
+        </div>
+        <div class="divider"></div>
+        <div class="row" style="padding:12px 0">
+          <span class="icon-tile" style="background:var(--green-100)">💸</span>
+          <div class="meta"><div class="t">You paid Imran Rs 1,500</div><div class="s">Yesterday · JazzCash</div></div>
+          <span class="pill green">Settled ✓</span>
+        </div>
+        <div class="divider"></div>
+        <div class="row" style="padding:12px 0" onclick="go('expense-detail')">
+          <span class="icon-tile" style="background:var(--gold-100)">🍔</span>
+          <div class="meta"><div class="t">Imran added "Dinner — Baba Jee"</div><div class="s">Yesterday · Rs 850</div></div>
+          <span style="font-size:12px;color:var(--muted)">4-way</span>
+        </div>
+        <div class="divider"></div>
+        <div class="row" style="padding:12px 0">
+          <span class="icon-tile" style="background:var(--green-100)">💸</span>
+          <div class="meta"><div class="t">You settled with Bilal</div><div class="s">Mon · Raast · Rs 450</div></div>
+          <span class="pill green">Settled ✓</span>
+        </div>
+      </div>
+    </div>
+    <div class="bottombar">
+      <button class="nav-item" onclick="go('home')"><span class="ico">🏠</span>Home</button>
+      <button class="nav-item" onclick="go('groups')"><span class="ico">👥</span>Groups</button>
+      <button class="nav-item active"><span class="ico">🧾</span>Activity</button>
+      <button class="nav-item" onclick="go('profile')"><span class="ico">👤</span>Profile</button>
+    </div>
+  </div>
+
+  <!-- ══════════════ s23 MONTHLY SUMMARY ══════════════ -->
+  <div class="screen" id="summary">
+    <div class="statusbar"><span>9:41</span><span class="right">📶 🔋</span></div>
+    <div class="topbar"><button class="btn-icon" onclick="go('activity')">←</button><h1>August 2026</h1></div>
+    <div style="padding:0 20px 40px;flex:1">
+      <div class="card green" style="margin-bottom:14px">
+        <div style="font-size:13px;opacity:.9">Total shared expenses</div>
+        <div class="money lg" style="font-size:32px">Rs 8,450</div>
+        <div style="font-size:12.5px;opacity:.85;margin-top:4px">▲ 12% vs July</div>
+      </div>
+      <div class="card">
+        <div style="font-weight:700;font-size:14.5px;margin-bottom:12px">By category</div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px"><span>🍔 Food</span><b>Rs 3,200</b></div><div class="bar"><i style="width:78%;background:var(--green-600)"></i></div></div>
+          <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px"><span>🏠 Rent</span><b>Rs 2,500</b></div><div class="bar"><i style="width:61%;background:var(--gold-500)"></i></div></div>
+          <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px"><span>⚡ Utilities</span><b>Rs 1,350</b></div><div class="bar"><i style="width:33%;background:var(--green-600)"></i></div></div>
+          <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px"><span>🚕 Transport</span><b>Rs 1,200</b></div><div class="bar"><i style="width:29%;background:var(--gold-500)"></i></div></div>
+          <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px"><span>🎉 Fun</span><b>Rs 200</b></div><div class="bar"><i style="width:5%;background:var(--green-600)"></i></div></div>
+        </div>
+      </div>
+      <div class="card" style="margin-top:12px">
+        <div style="font-weight:700;font-size:14.5px;margin-bottom:8px">Biggest expense</div>
+        <div class="row" style="padding:8px 0">
+          <span class="icon-tile" style="background:var(--gold-100)">🏠</span>
+          <div class="meta"><div class="t">Rent — Flat 302</div><div class="s">Hassan paid · 1 Aug</div></div>
+          <span class="money sm">Rs 30,000</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════ s24 NOTIFICATIONS ══════════════ -->
+  <div class="screen" id="notifs">
+    <div class="statusbar"><span>9:41</span><span class="right">📶 🔋</span></div>
+    <div class="topbar"><button class="btn-icon" onclick="go('home')">←</button><h1>Notifications</h1><button class="btn-icon">⚙️</button></div>
+    <div style="padding:0 20px 40px;flex:1">
+      <div class="section-label" style="padding:6px 0 8px">Today</div>
+      <div class="card" style="padding:4px 16px">
+        <div class="row" style="padding:13px 0" onclick="go('confirm')">
+          <span class="icon-tile" style="background:var(--green-100)">💸</span>
+          <div class="meta"><div class="t">Sara paid you Rs 1,100</div><div class="s">Flat 302 · tap to confirm</div></div>
+        </div>
+        <div class="divider"></div>
+        <div class="row" style="padding:13px 0" onclick="go('group-detail')">
+          <span class="icon-tile" style="background:var(--gold-100)">👥</span>
+          <div class="meta"><div class="t">Bilal joined Chai Gang 🎉</div><div class="s">via invite link · 10:04</div></div>
+        </div>
+      </div>
+      <div class="section-label" style="padding:14px 0 8px">Yesterday</div>
+      <div class="card" style="padding:4px 16px">
+        <div class="row" style="padding:13px 0" onclick="go('expense-detail')">
+          <span class="icon-tile" style="background:var(--gold-100)">🍔</span>
+          <div class="meta"><div class="t">Imran added "Dinner — Baba Jee"</div><div class="s">Rs 850 · 4-way</div></div>
+        </div>
+        <div class="divider"></div>
+        <div class="row" style="padding:13px 0" onclick="go('paid')">
+          <span class="icon-tile" style="background:var(--green-100)">💸</span>
+          <div class="meta"><div class="t">Imran confirmed your payment ✓</div><div class="s">Rs 1,500 · settled</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════ s26 PROFILE ══════════════ -->
+  <div class="screen tinted" id="profile">
+    <div class="statusbar"><span>9:41</span><span class="right">📶 🔋</span></div>
+    <div class="topbar"><h1>Profile</h1></div>
+    <div style="padding:0 20px 100px;flex:1">
+      <div class="card" style="display:flex;align-items:center;gap:14px;margin-bottom:14px;padding:18px 16px">
+        <div class="avatar" style="width:56px;height:56px;font-size:22px;background:#E86A5E">ع</div>
+        <div style="flex:1">
+          <div style="font-weight:800;font-size:17px">Ali Raza</div>
+          <div style="font-size:13px;color:var(--muted)">+92 300 1234567</div>
+        </div>
+        <button class="btn-icon" onclick="go('settings')">⚙️</button>
+      </div>
+      <div style="display:flex;gap:10px;margin-bottom:14px">
+        <div class="card green-soft" style="flex:1;text-align:center;padding:14px"><div class="money lg" style="font-size:22px">3</div><div style="font-size:12px;color:var(--muted)">Groups</div></div>
+        <div class="card green-soft" style="flex:1;text-align:center;padding:14px"><div class="money lg" style="font-size:22px">42</div><div style="font-size:12px;color:var(--muted)">Expenses</div></div>
+        <div class="card green-soft" style="flex:1;text-align:center;padding:14px"><div class="money lg" style="font-size:22px">Rs 9.2k</div><div style="font-size:12px;color:var(--muted)">Settled</div></div>
+      </div>
+      <div class="card gold" style="display:flex;align-items:center;gap:12px;cursor:pointer;margin-bottom:14px" onclick="go('pro')">
+        <span style="font-size:26px">👑</span>
+        <div style="flex:1"><div style="font-weight:800">Go Pro</div><div style="font-size:12.5px;opacity:.85">Receipt scan, stats & no limits</div></div>
+        <span style="font-weight:800">Rs 299/mo →</span>
+      </div>
+      <div class="card" style="padding:4px 16px">
+        <div class="row" style="padding:13px 0" onclick="go('settings')"><span class="icon-tile" style="background:var(--green-50)">🌐</span><div class="meta"><div class="t">Settings</div></div><span style="color:var(--muted)">›</span></div>
+        <div class="divider"></div>
+        <div class="row" style="padding:13px 0" onclick="go('offline')"><span class="icon-tile" style="background:var(--green-50)">📡</span><div class="meta"><div class="t">Offline mode preview</div></div><span style="color:var(--muted)">›</span></div>
+        <div class="divider"></div>
+        <div class="row" style="padding:13px 0"><span class="icon-tile" style="background:var(--green-50)">❓</span><div class="meta"><div class="t">Help & FAQ</div></div><span style="color:var(--muted)">›</span></div>
+        <div class="divider"></div>
+        <div class="row" style="padding:13px 0"><span class="icon-tile" style="background:var(--green-50)">🔒</span><div class="meta"><div class="t">Privacy Policy</div></div><span style="color:var(--muted)">›</span></div>
+      </div>
+    </div>
+    <div class="bottombar">
+      <button class="nav-item" onclick="go('home')"><span class="ico">🏠</span>Home</button>
+      <button class="nav-item" onclick="go('groups')"><span class="ico">👥</span>Groups</button>
+      <button class="nav-item" onclick="go('activity')"><span class="ico">🧾</span>Activity</button>
+      <button class="nav-item active"><span class="ico">👤</span>Profile</button>
+    </div>
+  </div>
+
+  <!-- ══════════════ s27 SETTINGS ══════════════ -->
+  <div class="screen" id="settings">
+    <div class="statusbar"><span>9:41</span><span class="right">📶 🔋</span></div>
+    <div class="topbar"><button class="btn-icon" onclick="go('profile')">←</button><h1>Settings</h1></div>
+    <div style="padding:0 20px 40px;flex:1">
+      <div class="section-label" style="padding:6px 0 8px">App</div>
+      <div class="card" style="padding:4px 16px">
+        <div class="row" style="padding:13px 0"><div class="meta"><div class="t">Language</div><div class="s">English · اردو · हिंदी</div></div><span class="pill green">EN</span></div>
+        <div class="divider"></div>
+        <div class="row" style="padding:13px 0"><div class="meta"><div class="t">Currency</div></div><span style="font-weight:600">PKR ₨</span></div>
+        <div class="divider"></div>
+        <div class="row" style="padding:13px 0"><div class="meta"><div class="t">Theme</div><div class="s">Auto (light)</div></div><span style="color:var(--muted)">›</span></div>
+      </div>
+      <div class="section-label" style="padding:14px 0 8px">Notifications</div>
+      <div class="card" style="padding:4px 16px">
+        <div class="row" style="padding:13px 0"><div class="meta"><div class="t">New expenses</div></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
+        <div class="divider"></div>
+        <div class="row" style="padding:13px 0"><div class="meta"><div class="t">Payment confirmations</div></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
+        <div class="divider"></div>
+        <div class="row" style="padding:13px 0"><div class="meta"><div class="t">Monthly summary</div></div><button class="toggle" onclick="this.classList.toggle('on')"></button></div>
+      </div>
+      <div class="section-label" style="padding:14px 0 8px">Data</div>
+      <div class="card" style="padding:4px 16px">
+        <div class="row" style="padding:13px 0"><div class="meta"><div class="t">Export my data (CSV)</div></div><span style="color:var(--muted)">›</span></div>
+        <div class="divider"></div>
+        <div class="row" style="padding:13px 0"><div class="meta"><div class="t">Delete account</div></div><span style="color:var(--danger)">›</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════ s20 PRO ══════════════ -->
+  <div class="screen tinted" id="pro">
+    <div class="statusbar"><span>9:41</span><span class="right">📶 🔋</span></div>
+    <div class="topbar"><button class="btn-icon" onclick="go('profile')">←</button><h1>Pro</h1></div>
+    <div style="padding:0 20px 40px;flex:1">
+      <div class="card gold" style="text-align:center;padding:24px;margin-bottom:14px">
+        <div style="font-size:40px">👑</div>
+        <div style="font-size:24px;font-weight:800;margin-top:6px">BillSplit Dost Pro</div>
+        <div style="font-size:14px;opacity:.9;margin-top:4px">For doston who mean business 😄</div>
+        <div class="money lg" style="font-size:34px;margin-top:12px">Rs 299<span style="font-size:14px;font-weight:500">/month</span></div>
+      </div>
+      <div class="card" style="padding:4px 16px;margin-bottom:14px">
+        <div class="row" style="padding:12px 0"><span class="icon-tile" style="background:var(--green-50)">📷</span><div class="meta"><div class="t">Receipt scanner</div><div class="s">Snap a bill — we fill the expense</div></div><span style="color:var(--green-600)">✓</span></div>
+        <div class="divider"></div>
+        <div class="row" style="padding:12px 0"><span class="icon-tile" style="background:var(--green-50)">📊</span><div class="meta"><div class="t">Advanced stats & reports</div></div><span style="color:var(--green-600)">✓</span></div>
+        <div class="divider"></div>
+        <div class="row" style="padding:12px 0"><span class="icon-tile" style="background:var(--green-50)">∞</span><div class="meta"><div class="t">Unlimited groups & expenses</div></div><span style="color:var(--green-600)">✓</span></div>
+        <div class="divider"></div>
+        <div class="row" style="padding:12px 0"><span class="icon-tile" style="background:var(--green-50)">🚫</span><div class="meta"><div class="t">No ads, ever</div></div><span style="color:var(--green-600)">✓</span></div>
+      </div>
+      <button class="btn btn-gold" onclick="go('profile'); toast('Checkout: Safepay (PK) hosted page — sandbox demo')">Subscribe — Rs 299/mo</button>
+      <p style="text-align:center;font-size:12px;color:var(--muted);margin-top:10px">Secure checkout by Safepay · cancel anytime</p>
+    </div>
+  </div>
+
+  <!-- ══════════════ s10 INVITE SHEET ══════════════ -->
+  <div class="scrim" id="invite-scrim" onclick="closeSheet('invite')"></div>
+  <div class="sheet" id="invite">
+    <div class="grab"></div>
+    <h2>Invite friends to Chai Gang 🍵</h2>
+    <div class="card green-soft" style="margin-bottom:14px">
+      <div style="font-size:12px;color:var(--muted);margin-bottom:4px">Invite link</div>
+      <div style="font-weight:600;font-size:13.5px;word-break:break-all">https://billsplitdost.pk/g/join/CHAI-7F2K</div>
+    </div>
+    <div style="display:flex;gap:10px;margin-bottom:16px">
+      <button class="btn btn-primary" style="flex:1" onclick="toast('Opening WhatsApp share…')">🟢 WhatsApp</button>
+      <button class="btn btn-outline" style="flex:1" onclick="toast('Opening SMS share…')">💬 SMS</button>
+      <button class="btn btn-outline" style="flex:1" onclick="toast('Link copied ✓')">⧉ Copy</button>
+    </div>
+    <div style="font-size:13px;font-weight:700;margin-bottom:8px">Who has joined</div>
+    <div class="card" style="padding:4px 16px">
+      <div class="row" style="padding:11px 0"><span class="avatar sm" style="background:#E86A5E">ع</span><div class="meta"><div class="t">Ali (you)</div></div><span class="pill green">in ✓</span></div>
+      <div class="divider"></div>
+      <div class="row" style="padding:11px 0"><span class="avatar sm" style="background:#4A90D9">I</span><div class="meta"><div class="t">Imran</div></div><span class="pill green">in ✓</span></div>
+      <div class="divider"></div>
+      <div class="row" style="padding:11px 0"><span class="avatar sm" style="background:#8E6BC9">S</span><div class="meta"><div class="t">Sara</div></div><span class="pill green">in ✓</span></div>
+      <div class="divider"></div>
+      <div class="row" style="padding:11px 0"><span class="avatar sm" style="background:#ddd;color:var(--muted)">?</span><div class="meta"><div class="t" style="color:var(--muted)">Bilal</div></div><span class="pill gold">waiting…</span></div>
+    </div>
+    <button class="btn btn-outline" style="margin-top:16px" onclick="closeSheet('invite')">Close</button>
+  </div>
+
+  <!-- ══════════════ s31 INSTALL PROMPT (standalone) ══════════════ -->
+  <div class="screen tinted" id="install">
+    <div class="statusbar"><span>9:41</span><span class="right">📶 🔋</span></div>
+    <div class="topbar"><button class="btn-icon" onclick="go('welcome')">←</button><h1>Install</h1></div>
+    <div class="center" style="gap:16px;justify-content:flex-start;padding-top:36px">
+      <div style="width:96px;height:96px;border-radius:24px;background:linear-gradient(135deg,var(--green-600),var(--green-700));display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-float);font-size:42px">🪙</div>
+      <h1 style="font-size:24px;font-weight:800">Install BillSplit Dost</h1>
+      <p style="color:var(--muted);font-size:14.5px;max-width:300px">Add to your home screen — it works <b style="color:var(--ink)">offline</b>, loads in a tap, and updates itself.</p>
+      <div class="card green-soft" style="width:100%;max-width:320px;text-align:left">
+        <div style="display:flex;gap:10px;align-items:center;padding:6px 0"><span>⚡</span><span style="font-size:13.5px">Opens like an app — no browser bar</span></div>
+        <div style="display:flex;gap:10px;align-items:center;padding:6px 0"><span>📡</span><span style="font-size:13.5px">Works without internet</span></div>
+        <div style="display:flex;gap:10px;align-items:center;padding:6px 0"><span>🔔</span><span style="font-size:13.5px">Get push notifications</span></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;width:100%;max-width:320px">
+        <button class="btn btn-primary" onclick="go('home'); toast('Installing… (beforeinstallprompt fires) ✓')">⬇ Install</button>
+        <button class="btn btn-outline" onclick="go('home')">Not now</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════ s33 UPDATE BANNER (standalone) ══════════════ -->
+  <div class="screen tinted" id="update">
+    <div class="statusbar"><span>9:41</span><span class="right">📶 🔋</span></div>
+    <div class="topbar"><button class="btn-icon" onclick="go('home')">←</button><h1></h1></div>
+    <div class="center" style="gap:14px">
+      <div style="width:96px;height:96px;border-radius:50%;background:var(--gold-100);display:flex;align-items:center;justify-content:center;font-size:44px">🔄</div>
+      <h1 style="font-size:24px;font-weight:800">New version ready</h1>
+      <p style="color:var(--muted);font-size:14.5px;max-width:300px">We shipped improvements — a quick refresh gets you the latest hisaab updates.</p>
+      <div style="display:flex;flex-direction:column;gap:10px;width:100%;max-width:320px">
+        <button class="btn btn-primary" onclick="toast('Refreshing… (skipWaiting + reload) ✓')">🔄 Refresh now</button>
+        <button class="btn btn-outline" onclick="go('home')">Later</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════ s32 OFFLINE ══════════════ -->
+  <div class="screen tinted" id="offline">
+    <div class="statusbar"><span>9:41</span><span class="right">📶 🔋</span></div>
+    <div class="topbar"><button class="btn-icon" onclick="go('profile')">←</button><h1></h1></div>
+    <div class="center" style="gap:14px">
+      <div class="offline-ill">📡</div>
+      <h1 style="font-size:24px;font-weight:800">You're offline</h1>
+      <p style="color:var(--muted);font-size:14.5px;max-width:300px">No internet connection. Your cached groups are still here — <b style="color:var(--ink)">new expenses will sync when you're back online.</b></p>
+      <div class="card green-soft" style="width:100%;max-width:310px;text-align:left">
+        <div style="font-size:13px;font-weight:700;margin-bottom:8px">Cached & ready</div>
+        <div style="font-size:13px;color:var(--muted)">✓ Chai Gang 🍵 · 12 expenses<br>✓ Flat 302 🏠 · 8 expenses<br>✓ Hunza Trip 🏔️ · 34 expenses</div>
+      </div>
+      <div style="display:flex;gap:10px;width:100%;max-width:320px">
+        <button class="btn btn-primary" style="flex:1" onclick="toast('Checking connection…')">🔄 Retry</button>
+        <button class="btn btn-outline" style="flex:1" onclick="go('add1')">＋ Add expense</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+function go(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  const el=document.getElementById(id);
+  if(el) el.classList.add('active');
+  const p=document.querySelector('.phone'); if(p) p.scrollTop=0;
+  closeAllSheets();
+  window.scrollTo({top:0,behavior:'instant'});
+}
+let toastTimer;
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove('show'),2600);
+}
+function openSheet(id){
+  document.getElementById(id+'-scrim').classList.add('open');
+  document.getElementById(id).classList.add('open');
+}
+function closeSheet(id){
+  const s=document.getElementById(id); if(s) s.classList.remove('open');
+  const c=document.getElementById(id+'-scrim'); if(c) c.classList.remove('open');
+}
+function closeAllSheets(){ document.querySelectorAll('.sheet').forEach(s=>s.classList.remove('open')); document.querySelectorAll('.scrim').forEach(c=>c.classList.remove('open')); }
+function hideInstall(){ document.getElementById('installCard').style.display='none'; }
+function hideUpdate(){ document.getElementById('updateBanner').style.display='none'; }
+function setLang(l){
+  const tag=document.getElementById('tagline');
+  const chips=document.querySelectorAll('#welcome .chip');
+  chips.forEach(c=>c.classList.remove('active'));
+  if(l==='ur'){
+    tag.innerHTML='<span class="urdu" style="font-size:19px">دوستوں کے ساتھ حساب، بنا جھنجھٹ</span>';
+    tag.style.direction='rtl';
+    chips[1].classList.add('active');
+  }else if(l==='hi'){
+    tag.textContent='दोस्तों के साथ हिसाब, बिना झंझट';
+    tag.style.direction='ltr';
+    chips[2].classList.add('active');
+  }else{
+    tag.textContent='Split bills with friends — without the awkwardness';
+    tag.style.direction='ltr';
+    chips[0].classList.add('active');
+  }
+}
+function setCountry(c){
+  document.getElementById('ccode').textContent = c==='pk' ? '+92' : '+91';
+  document.querySelectorAll('#login .chip').forEach(ch=>ch.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+}
+// default screen
+go('welcome');
+</script>
+</body>
+</html>

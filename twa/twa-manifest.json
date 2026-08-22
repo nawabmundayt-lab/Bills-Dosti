@@ -1,0 +1,50 @@
+{
+  "packageId": "com.billsplitdost.app",
+  "host": "https://billsplitdost.pk",
+  "name": "BillSplit Dost",
+  "launcherName": "BillSplit",
+  "display": "standalone",
+  "themeColor": "#0E7A3D",
+  "navigationColor": "#0E7A3D",
+  "navigationColorDark": "#0E7A3D",
+  "backgroundColor": "#F6F8F6",
+  "enableNotifications": true,
+  "startUrl": "/en",
+  "iconUrl": "https://billsplitdost.pk/icons/icon-512.png",
+  "maskableIconUrl": "https://billsplitdost.pk/icons/maskable-512.png",
+  "splashScreenFadeOutDuration": 300,
+  "signingKey": {
+    "path": "../keystore/billsplitdost-release.keystore",
+    "alias": "billsplitdost"
+  },
+  "appVersionName": "1.0.0",
+  "appVersionCode": 1,
+  "shortcuts": [
+    {
+      "name": "Add expense",
+      "short_name": "Add",
+      "url": "/en/expense/new",
+      "chosenIconUrl": "https://billsplitdost.pk/icons/icon-192.png"
+    },
+    {
+      "name": "Settle up",
+      "short_name": "Settle",
+      "url": "/en/settle/list",
+      "chosenIconUrl": "https://billsplitdost.pk/icons/icon-192.png"
+    }
+  ],
+  "generatorApp": "bubblewrap-cli",
+  "webManifestUrl": "https://billsplitdost.pk/manifest.webmanifest",
+  "fallbackType": "customtabs",
+  "features": {},
+  "enableSiteSettingsShortcut": true,
+  "isChromeOSOnly": false,
+  "isMetaQuest": false,
+  "fullScopeUrl": "https://billsplitdost.pk/",
+  "minSdkVersion": 21,
+  "orientation": "portrait",
+  "fingerprints": [],
+  "additionalTrustedOrigins": [],
+  "retainedBundles": [],
+  "appVersion": "1.0.0"
+}

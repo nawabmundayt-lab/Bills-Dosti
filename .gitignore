@@ -1,0 +1,19 @@
+# Node / Next
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+next-env.d.ts
+
+# Env
+.env
+.env.local
+.env*.local
+
+# Logs
+npm-debug.log*
+*.log
+
+# OS
+.DS_Store
+.github/workflows/ci.yml
